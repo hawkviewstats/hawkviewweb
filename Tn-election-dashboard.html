@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tamil Nadu Elections — Data Dashboard (1952–2021)</title>
+  <!-- Tailwind CDN for quick professional styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* Small custom tweaks to complement Tailwind */
+    .glass { background: rgba(255,255,255,0.7); backdrop-filter: blur(6px); }
+    .card { box-shadow: 0 6px 20px rgba(11, 14, 23, 0.08); }
+    .muted { color: #6b7280; }
+    /* Responsive canvas container to keep charts crisp */
+    .chart-wrap { position: relative; height: 360px; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 leading-relaxed">
+  <div class="max-w-7xl mx-auto p-6">
+    <header class="flex items-center justify-between mb-6">
+      <div>
+        <h1 class="text-2xl font-semibold">Tamil Nadu Elections — Data Dashboard</h1>
+        <p class="muted">Presentation-ready visualizations of assembly seats & vote share (post-independence template + modern cycles included)</p>
+      </div>
+      <div class="flex gap-3 items-center">
+        <a href="sandbox:/mnt/data/tn_party_results_2011_2021.csv" class="px-4 py-2 bg-sky-600 text-white rounded-md text-sm card">Download CSV (2011–2021)</a>
+        <a href="sandbox:/mnt/data/tn_post_independence_template.csv" class="px-4 py-2 border border-slate-200 rounded-md text-sm card">Download Template (1952–2021)</a>
+      </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Left column: summary & controls -->
+      <section class="lg:col-span-1 space-y-4">
+        <div class="p-4 rounded-2xl glass card">
+          <h2 class="font-medium">Quick Summary</h2>
+          <p class="muted text-sm">Use the charts on the right to highlight: long-term dominance of Dravidian parties, vote-seat disproportionality, and the role of alliances & turnout. All charts are interactive and can be exported as images.</p>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-white card">
+          <h3 class="font-medium">Select Year(s)</h3>
+          <div class="mt-3 flex gap-2 flex-wrap">
+            <button class="year-btn px-3 py-1 text-sm rounded-full border" data-year="2011">2011</button>
+            <button class="year-btn px-3 py-1 text-sm rounded-full border" data-year="2016">2016</button>
+            <button class="year-btn px-3 py-1 text-sm rounded-full border" data-year="2021">2021</button>
+            <button id="btn-all" class="px-3 py-1 text-sm rounded-full border">All</button>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-white card">
+          <h3 class="font-medium">Download Charts</h3>
+          <div class="mt-3 flex gap-2">
+            <button id="export-seats" class="px-3 py-1 bg-emerald-600 text-white rounded-md text-sm">Export Seats Chart</button>
+            <button id="export-vote" class="px-3 py-1 bg-emerald-600 text-white rounded-md text-sm">Export Vote Share</button>
+          </div>
+          <p class="muted text-xs mt-3">Tip: Use the template CSV to add older years; the page will accept paste updates (edit the `data` variable in the JS section).</p>
+        </div>
+      </section>
+
+      <!-- Right columns: charts -->
+      <section class="lg:col-span-2 space-y-6">
+        <div class="p-4 rounded-2xl bg-white card">
+          <div class="flex items-start justify-between">
+            <h3 class="font-medium">Seats won by party (grouped by year)</h3>
+            <span class="muted text-sm">Interactive | Hover for values</span>
+          </div>
+          <div class="chart-wrap mt-4">
+            <canvas id="seatsChart"></canvas>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-white card">
+          <div class="flex items-start justify-between">
+            <h3 class="font-medium">Vote share by party (grouped by year)</h3>
+            <span class="muted text-sm">Interactive | Hover for percentages</span>
+          </div>
+          <div class="chart-wrap mt-4">
+            <canvas id="voteChart"></canvas>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-white card">
+          <div class="flex items-start justify-between">
+            <h3 class="font-medium">Cumulative seats (2011–2021)</h3>
+            <span class="muted text-sm">A single snapshot of recent cycles</span>
+          </div>
+          <div class="chart-wrap mt-4">
+            <canvas id="cumChart"></canvas>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-white card">
+          <h3 class="font-medium">Raw data (2011–2021)</h3>
+          <div class="overflow-x-auto mt-3">
+            <table id="dataTable" class="min-w-full text-sm border-collapse">
+              <thead class="bg-slate-100 text-left">
+                <tr>
+                  <th class="p-2">Year</th>
+                  <th class="p-2">Party</th>
+                  <th class="p-2">Seats Won</th>
+                  <th class="p-2">Vote Share (%)</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="mt-8 text-center muted text-xs">Built for presentations — edit the <code>data</code> variable in the script to add older years or constituency-level values.</footer>
+  </div>
+
+  <script>
+    // === Data: default modern cycles (2011, 2016, 2021). Replace or extend this with values from your template CSV. ===
+    const data = [
+      { year: 2011, party: 'AIADMK', seats: 150, vote: 38.4 },
+      { year: 2011, party: 'DMK', seats: 23, vote: 22.4 },
+      { year: 2011, party: 'INC', seats: 5, vote: 9.3 },
+      { year: 2011, party: 'DMDK', seats: 29, vote: 7.9 },
+      { year: 2011, party: 'CPI', seats: 9, vote: 2.0 },
+      { year: 2011, party: 'CPI(M)', seats: 10, vote: 2.4 },
+      { year: 2011, party: 'PMK', seats: 3, vote: 5.2 },
+      { year: 2011, party: 'BJP', seats: 0, vote: 2.2 },
+      { year: 2011, party: 'VCK', seats: 0, vote: 1.5 },
+
+      { year: 2016, party: 'AIADMK', seats: 136, vote: 40.88 },
+      { year: 2016, party: 'DMK', seats: 89, vote: 31.39 },
+      { year: 2016, party: 'INC', seats: 8, vote: 6.47 },
+      { year: 2016, party: 'IUML', seats: 1, vote: 0.73 },
+      { year: 2016, party: 'PMK', seats: 0, vote: 5.36 },
+      { year: 2016, party: 'BJP', seats: 0, vote: 2.86 },
+      { year: 2016, party: 'NTK', seats: 0, vote: 1.07 },
+      { year: 2016, party: 'CPI', seats: 0, vote: 0.79 },
+      { year: 2016, party: 'CPI(M)', seats: 0, vote: 0.72 },
+      { year: 2016, party: 'DMDK', seats: 0, vote: 2.41 },
+      { year: 2016, party: 'VCK', seats: 0, vote: 0.77 },
+
+      { year: 2021, party: 'DMK', seats: 133, vote: 37.70 },
+      { year: 2021, party: 'AIADMK', seats: 66, vote: 33.29 },
+      { year: 2021, party: 'INC', seats: 18, vote: 4.27 },
+      { year: 2021, party: 'BJP', seats: 4, vote: 2.62 },
+      { year: 2021, party: 'PMK', seats: 5, vote: 3.80 },
+      { year: 2021, party: 'VCK', seats: 4, vote: 0.99 },
+      { year: 2021, party: 'CPI', seats: 2, vote: 1.09 },
+      { year: 2021, party: 'CPI(M)', seats: 2, vote: 0.85 },
+      { year: 2021, party: 'IUML', seats: 0, vote: 0.48 },
+      { year: 2021, party: 'DMDK', seats: 0, vote: 0.43 },
+      { year: 2021, party: 'NTK', seats: 0, vote: 6.58 },
+      { year: 2021, party: 'AMMK', seats: 0, vote: 2.35 }
+    ];
+
+    // Utility: unique list of parties (in stable order)
+    const parties = Array.from(new Set(data.map(d => d.party)));
+    const years = Array.from(new Set(data.map(d => d.year))).sort();
+
+    // Build pivot tables
+    function pivot(metric) {
+      const table = {};
+      parties.forEach(p => { table[p] = {}; years.forEach(y => table[p][y] = 0); });
+      data.forEach(row => { table[row.party][row.year] = row[metric] || 0; });
+      return table; // { party: { year: value } }
+    }
+
+    // Seats chart
+    const seatsPivot = pivot('seats');
+    const seatsDatasets = years.map(yr => ({ label: yr.toString(), data: parties.map(p => seatsPivot[p][yr]) }));
+
+    const seatsCtx = document.getElementById('seatsChart').getContext('2d');
+    const seatsChart = new Chart(seatsCtx, {
+      type: 'bar',
+      data: { labels: parties, datasets: seatsDatasets },
+      options: { responsive: true, plugins: { legend: { position: 'top' }, tooltip: { mode: 'index', intersect: false } }, interaction: { mode: 'nearest', axis: 'x', intersect: false }, scales: { x: { stacked: false }, y: { beginAtZero: true } } }
+    });
+
+    // Vote share chart
+    const votePivot = pivot('vote');
+    const voteDatasets = years.map(yr => ({ label: yr.toString(), data: parties.map(p => votePivot[p][yr]) }));
+
+    const voteCtx = document.getElementById('voteChart').getContext('2d');
+    const voteChart = new Chart(voteCtx, {
+      type: 'bar',
+      data: { labels: parties, datasets: voteDatasets },
+      options: { responsive: true, plugins: { legend: { position: 'top' }, tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.raw}%` } } }, scales: { y: { beginAtZero: true, ticks: { callback: v => v + '%' } } } }
+    });
+
+    // Cumulative seats chart
+    const cumSeats = parties.map(p => data.filter(d => d.party === p).reduce((s,r) => s + (r.seats || 0), 0));
+    const cumCtx = document.getElementById('cumChart').getContext('2d');
+    const cumChart = new Chart(cumCtx, {
+      type: 'bar',
+      data: { labels: parties, datasets: [{ label: 'Cumulative seats (2011–2021)', data: cumSeats }] },
+      options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+    });
+
+    // Fill data table
+    function renderTable() {
+      const tbody = document.querySelector('#dataTable tbody');
+      tbody.innerHTML = '';
+      data.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td class="p-2">${r.year}</td><td class="p-2">${r.party}</td><td class="p-2">${r.seats}</td><td class="p-2">${r.vote}</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+    renderTable();
+
+    // Year filter buttons
+    document.querySelectorAll('.year-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const y = Number(btn.dataset.year);
+        filterYears([y]);
+      });
+    });
+    document.getElementById('btn-all').addEventListener('click', () => filterYears(years));
+
+    function filterYears(selectedYears) {
+      // Update datasets for seats and vote
+      const newSeats = selectedYears.map(yr => ({ label: yr.toString(), data: parties.map(p => seatsPivot[p][yr] || 0) }));
+      seatsChart.data.datasets = newSeats;
+      seatsChart.update();
+
+      const newVote = selectedYears.map(yr => ({ label: yr.toString(), data: parties.map(p => votePivot[p][yr] || 0) }));
+      voteChart.data.datasets = newVote;
+      voteChart.update();
+    }
+
+    // Export functions
+    function downloadCanvas(canvas, filename) {
+      const link = document.createElement('a');
+      link.href = canvas.toDataURL('image/png');
+      link.download = filename;
+      link.click();
+    }
+    document.getElementById('export-seats').addEventListener('click', () => downloadCanvas(document.getElementById('seatsChart'), 'tn_seats_chart.png'));
+    document.getElementById('export-vote').addEventListener('click', () => downloadCanvas(document.getElementById('voteChart'), 'tn_vote_chart.png'));
+
+    // Make charts responsive on resize (Chart.js handles this, but re-render for crispness)
+    window.addEventListener('resize', () => { seatsChart.resize(); voteChart.resize(); cumChart.resize(); });
+  </script>
+</body>
+</html>
