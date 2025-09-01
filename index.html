@@ -10,85 +10,24 @@
   gtag('config', 'G-41ZHCPR3LV');
 </script>
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Hawkview solution</title>
-  <style>
-    :root {
-      --bg1: #0f172a;  /* slate-900 */
-      --bg2: #1e293b;  /* slate-800 */
-      --card: rgba(255,255,255,0.06);
-      --text: #e5e7eb; /* slate-200 */
-      --accent: #38bdf8; /* sky-400 */
-      --muted: #94a3b8; /* slate-400 */
-    }
-    * { box-sizing: border-box; }
-    html, body { height: 100%; }
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-      color: var(--text);
-      background: radial-gradient(80rem 80rem at 10% -10%, #0ea5e9 0%, transparent 30%),
-                  radial-gradient(60rem 60rem at 110% 10%, #22d3ee 0%, transparent 35%),
-                  linear-gradient(160deg, var(--bg1), var(--bg2));
-      display: grid;
-      place-items: center;
-      padding: 24px;
-    }
-    .card {
-      width: 100%;
-      max-width: 820px;
-      background: var(--card);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 20px;
-      padding: 42px 32px;
-      box-shadow: 0 30px 80px rgba(0,0,0,0.35);
-      text-align: center;
-    }
-    h1 {
-      margin: 0 0 8px;
-      font-size: clamp(28px, 5vw, 48px);
-      letter-spacing: 0.5px;
-    }
-    .tagline {
-      margin: 0 0 22px;
-      font-size: clamp(16px, 2.5vw, 22px);
-      color: var(--accent);
-      font-weight: 600;
-    }
-    .quote {
-      margin: 0 auto 8px;
-      max-width: 60ch;
-      font-size: clamp(15px, 2.2vw, 18px);
-      color: var(--muted);
-      line-height: 1.6;
-    }
-    .divider {
-      margin: 26px auto 0;
-      width: 120px;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent);
-    }
-    footer {
-      margin-top: 22px;
-      font-size: 12px;
-      color: #a8b0bf;
-      opacity: 0.9;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hawkview Solutions</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-  <main class="card" role="main" aria-label="Coming soon">
-    <h1>Hawkview solution</h1>
-    <p class="tagline">Optimized solution - Driven by Data</p>
+<body class="bg-gray-100 text-gray-800">
+  <div class="min-h-screen flex flex-col items-center justify-center p-6">
+    <h1 class="text-4xl font-bold mb-2">Hawkview Solutions</h1>
+    <p class="text-lg mb-6">Optimized solutions - Driven by Data</p>
+    <blockquote class="italic text-gray-600 mb-10">
+      “Good things take time — and they’re worth the wait.”
+    </blockquote>
 
-    <p class="quote">“Anything truly valuable takes time to create, and the wait makes it worthwhile.”</p>
-    <div class="divider" aria-hidden="true"></div>
-
-    <footer>Launching soon</footer>
-  </main>
+    <!-- Button to Election Insights -->
+    <a href="tn-election.html" 
+       class="px-6 py-3 bg-indigo-600 text-white rounded-xl shadow-lg hover:bg-indigo-700 transition">
+       Click here to see insights on Tamil Nadu Election Results
+    </a>
+  </div>
 </body>
 </html>
-
-
