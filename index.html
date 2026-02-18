@@ -9,96 +9,78 @@
 
   gtag('config', 'G-41ZHCPR3LV');
 </script>
-
+	
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hawkview Solutions</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="icon" type="image/png" href="hawkview-logo.png"> <!-- Your logo favicon -->
-
+  <title>Hawkview Survey</title>
   <style>
-    :root {
-      --bg1: #0f172a;  /* slate-900 */
-      --bg2: #1e293b;  /* slate-800 */
-      --card: rgba(255, 255, 255, 0.06);
-      --text: #e5e7eb; /* slate-200 */
-      --accent: #38bdf8; /* sky-400 */
-      --muted: #94a3b8; /* slate-400 */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f6fa;
+      color: #2f3640;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #273c75;
+      color: #f5f6fa;
+      padding: 2rem 1rem;
+    }
+    h1 {
+      margin: 0;
+    }
+    main {
+      margin-top: 5rem;
+    }
+    button {
+      background-color: #44bd32;
+      color: white;
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 5px;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #4cd137;
+    }
+    footer {
+      margin-top: 5rem;
+      padding: 1rem;
+      font-size: 0.9rem;
+      color: #718093;
     }
   </style>
 </head>
-<body class="h-screen flex flex-col font-sans">
-
-  <!-- Header (25% height, white) -->
-  <header class="h-1/4 bg-white flex items-center justify-between px-10">
-	<div>
-      <img src="hawkview-logo.png" alt="Hawkview Logo" 
-           class="h-24 w-24 rounded-full border-4 border-blue-600 shadow-md">
-    </div>
-    <div>
-      <h1 class="text-4xl font-bold text-blue-600">Hawkview Solutions</h1>
-      <p class="text-lg mt-2 italic text-gray-600">Driven by Data</p>
-    </div>
-    
+<body>
+  <header>
+    <h1>Hawkview Tamil Nadu Election Survey</h1>
   </header>
 
-  <!-- Main content (75% height, gradient background) -->
- <main class="h-3/4 grid grid-cols-2 grid-rows-2 gap-6 p-6"
-      style="background: linear-gradient(135deg, var(--bg1), var(--bg2), var(--bg1));">
+  <main>
+    <p>Welcome! Participate in our secure poll and help us predict the upcoming election.</p>
 
-    <!-- Sports Hawk -->
-    <section class="rounded-2xl shadow-lg flex flex-col items-center justify-center p-6 border border-slate-700"
-             style="background: var(--card); color: var(--text);">
-      <h2 class="text-2xl font-semibold mb-4">Sports Hawk</h2>
-      <a href="#" 
-         class="px-6 py-2 rounded-full border transition"
-         style="color: var(--accent); border-color: var(--accent);"
-         onmouseover="this.style.background= 'var(--accent)'; this.style.color='white';"
-         onmouseout="this.style.background= 'transparent'; this.style.color='var(--accent)';">
-        Coming Soon
-      </a>
-    </section>
-
-    <!-- Geo Political Hawk -->
-    <section class="rounded-2xl shadow-lg flex flex-col items-center justify-center p-6 border border-slate-700"
-             style="background: var(--card); color: var(--text);">
-      <h2 class="text-2xl font-semibold mb-4">Geo Political Hawk</h2>
-      <a href="Tn-election-dashboard.html" 
-         class="px-6 py-2 rounded-full border transition"
-         style="color: var(--accent); border-color: var(--accent);"
-         onmouseover="this.style.background= 'var(--accent)'; this.style.color='white';"
-         onmouseout="this.style.background= 'transparent'; this.style.color='var(--accent)';">
-        Tamilnadu Politics
-      </a>
-    </section>
-
-    <!-- Business Hawk -->
-    <section class="rounded-2xl shadow-lg flex flex-col items-center justify-center p-6 border border-slate-700"
-             style="background: var(--card); color: var(--text);">
-      <h2 class="text-2xl font-semibold mb-4">Business Hawk</h2>
-      <a href="#" 
-         class="px-6 py-2 rounded-full border transition"
-         style="color: var(--accent); border-color: var(--accent);"
-         onmouseover="this.style.background= 'var(--accent)'; this.style.color='white';"
-         onmouseout="this.style.background= 'transparent'; this.style.color='var(--accent)';">
-        Coming Soon
-      </a>
-    </section>
-
-    <!-- Economics Hawk -->
-    <section class="rounded-2xl shadow-lg flex flex-col items-center justify-center p-6 border border-slate-700"
-             style="background: var(--card); color: var(--text);">
-      <h2 class="text-2xl font-semibold mb-4">Economics Hawk</h2>
-      <a href="#" 
-         class="px-6 py-2 rounded-full border transition"
-         style="color: var(--accent); border-color: var(--accent);"
-         onmouseover="this.style.background= 'var(--accent)'; this.style.color='white';"
-         onmouseout="this.style.background= 'transparent'; this.style.color='var(--accent)';">
-        Coming Soon
-      </a>
-    </section>
-
+    <!-- Cognito login button -->
+    <a id="loginBtn" href="#">
+      <button>Login to Vote</button>
+    </a>
   </main>
+
+  <footer>
+    &copy; 2026 Hawkview.in | Secure & Private
+  </footer>
+
+  <script>
+    // Replace these with your Cognito details
+    const domain = "hawkview-auth.auth.ap-south-1.amazoncognito.com";
+    const clientId = "YOUR_CLIENT_ID"; // App Client ID
+    const redirectUri = "https://hawkview.in"; // Your site URL
+
+    const loginUrl = `https://${domain}/login?client_id=${clientId}&response_type=code&scope=openid+email+profile&redirect_uri=${redirectUri}`;
+    document.getElementById("loginBtn").href = loginUrl;
+  </script>
 </body>
 </html>
+
