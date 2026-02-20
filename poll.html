@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Puducherry Election Poll | Hawkview</title>
+  <script src="https://cdn.jsdelivr.net/npm/uuid@9.0.0/dist/umd/uuidv4.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@aws-sdk/client-dynamodb/dist/aws-sdk-client-dynamodb.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@aws-sdk/lib-dynamodb/dist/aws-sdk-lib-dynamodb.min.js"></script>
+  <link rel="stylesheet" href="poll.css">
+</head>
+<body class="background-customizable">
+
+  <header class="banner-customizable">
+    <h1 style="text-align:center; color:#f1f5f9;">Puducherry Election Poll</h1>
+  </header>
+
+  <main style="max-width:800px; margin:30px auto; padding:0 10px;">
+    <form id="poll-form">
+      
+      <!-- Question 1 -->
+      <section class="poll-card">
+        <label class="label-customizable">1. Which party do you think will win?</label>
+        <div class="options">
+          <label><input type="radio" name="q1" value="Party A"> DMK(M.K.Stalin)</label><br>
+          <label><input type="radio" name="q1" value="Party B"> AIADMK(EPS) </label><br>
+          <label><input type="radio" name="q1" value="Party C"> TVK(Vijay) </label>
+		  <label><input type="radio" name="q1" value="Party C"> NTK(Seeman) </label>
+        </div>
+      </section>
+
+
+      <!-- Question 3 -->
+      <section class="poll-card">
+        <label class="label-customizable">3. Which issue is most important to you?</label>
+        <div class="options">
+          <label><input type="radio" name="q3" value="Economy & Jobs"> Economy & Jobs</label><br>
+          <label><input type="radio" name="q3" value="Healthcare"> Healthcare</label><br>
+          <label><input type="radio" name="q3" value="Education"> Education</label><br>
+          <label><input type="radio" name="q3" value="Infrastructure"> Infrastructure</label>
+        </div>
+      </section>
+
+      <!-- Question 4 -->
+      <section class="poll-card">
+        <label class="label-customizable">4. Are you satisfied with the current government's performance?</label>
+        <div class="options">
+          <label><input type="radio" name="q4" value="Very Satisfied"> Very Satisfied</label><br>
+          <label><input type="radio" name="q4" value="Satisfied"> Satisfied</label><br>
+          <label><input type="radio" name="q4" value="Neutral"> Neutral</label><br>
+          <label><input type="radio" name="q4" value="Dissatisfied"> Dissatisfied</label>
+        </div>
+      </section>
+
+      <!-- Question 5 -->
+      <section class="poll-card">
+        <label class="label-customizable">5. Which age group do you belong to?</label>
+        <div class="options">
+          <label><input type="radio" name="q5" value="18–25"> 18–25</label><br>
+          <label><input type="radio" name="q5" value="26–35"> 26–35</label><br>
+          <label><input type="radio" name="q5" value="36–50"> 36–50</label><br>
+          <label><input type="radio" name="q5" value="50+"> 50+</label>
+        </div>
+      </section>
+
+      <!-- Question 6 -->
+      <section class="poll-card">
+        <label class="label-customizable">6. Would you encourage your friends/family to vote?</label>
+        <div class="options">
+          <label><input type="radio" name="q6" value="Yes"> Yes</label><br>
+          <label><input type="radio" name="q6" value="No"> No</label>
+        </div>
+      </section>
+
+      <button type="submit" class="submitButton-customizable">Submit Poll</button>
+    </form>
+  </main>
+
+  <script>
+    // Replace with your AWS region and credentials
+    const REGION = "ap-south-1";
+
+    const client = new aws_sdk_client_dynamodb.DynamoDBClient({ region: REGION });
+    const ddbDocClient = aws_sdk_lib_dynamodb.DynamoDBDocumentClient.from(client);
+
+    document.getElementById('poll-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.target;
+
+      const data = {
+        responseId: uuidv4(),
+        q1: form.q1.value,
+        q2: form.q2.value,
+        q3: form.q3.value,
+        q4: form.q4.value,
+        q5: form.q5.value,
+        q6: form.q6.value,
+        timestamp: new Date().toISOString()
+      };
+
+      try {
+        await ddbDocClient.send(new aws_sdk_lib_dynamodb.PutCommand({
+          TableName: "HawkviewPollResponses",
+          Item: data
+        }));
+        alert("Thank you! Your vote has been submitted.");
+        form.reset();
+      } catch (err) {
+        console.error(err);
+        alert("Error submitting poll. Please try again.");
+      }
+    });
+  </script>
+</body>
+</html>
