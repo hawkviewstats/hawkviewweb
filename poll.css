@@ -1,0 +1,44 @@
+.poll-card {
+  background-color: #1e293b;
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+  margin-bottom: 20px;
+  border: 1px solid #334155;
+}
+
+label {
+  color: #f1f5f9;
+}
+
+.options label {
+  display: block;
+  margin-top: 8px;
+  cursor: pointer;
+}
+
+input[type="radio"] {
+  margin-right: 10px;
+}
+
+.submitButton-customizable {
+  font-size: 16px;
+  font-weight: bold;
+  margin-top: 10px;
+  height: 45px;
+  width: 100%;
+  color: #fff;
+  background-color: #3b82f6;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.submitButton-customizable:hover {
+  background-color: #2563eb;
+}
+
+.background-customizable {
+  background-color: #0f172a;
+}
