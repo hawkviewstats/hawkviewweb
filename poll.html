@@ -184,7 +184,7 @@
   const token = await grecaptcha.execute('6Ld3BnUsAAAAAOFlxURTcfbTBGgW875Q8tByK9nM', { action: 'submit_poll' });
   
   const data = {
-    responseId: uuidv4(),
+    responseId: crypto.randomUUID(),
     q1: form.q1.value === "Others" ? form.q1_others.value : form.q1.value,
     q2: form.q2.value,
     q3: form.q3.value,
@@ -227,5 +227,6 @@
 </script>
 </body>
 </html>
+
 
 
