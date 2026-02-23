@@ -180,8 +180,9 @@
   e.preventDefault(); // listen to form submit
   if(!validateForm()) return;
 
+  grecaptcha.ready(async () => {
   const token = await grecaptcha.execute('6Ld3BnUsAAAAAOFlxURTcfbTBGgW875Q8tByK9nM', { action: 'submit_poll' });
-
+  
   const data = {
     responseId: uuidv4(),
     q1: form.q1.value === "Others" ? form.q1_others.value : form.q1.value,
@@ -221,8 +222,10 @@
     statusEl.innerText = "⚠ Network error. Please try again later.";
   }
 });
+    });
 
 </script>
 </body>
 </html>
+
 
