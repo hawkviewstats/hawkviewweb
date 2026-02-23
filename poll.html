@@ -2,128 +2,239 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Puducherry Election Poll | Hawkview</title>
+  <title>Tamil Nadu Election Exit Poll | Hawkview</title>
   <script src="https://cdn.jsdelivr.net/npm/uuid@9.0.0/dist/umd/uuidv4.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@aws-sdk/client-dynamodb/dist/aws-sdk-client-dynamodb.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@aws-sdk/lib-dynamodb/dist/aws-sdk-lib-dynamodb.min.js"></script>
+  <script src="https://www.google.com/recaptcha/api.js?render=YOUR_SITE_KEY"></script>
   <link rel="stylesheet" href="poll.css">
+  <style>
+    .error { border: 2px solid red; }
+    .error-text { color: red; font-weight: bold; }
+  </style>
 </head>
 <body class="background-customizable">
 
-  <header class="banner-customizable">
-    <h1 style="text-align:center; color:#f1f5f9;">Puducherry Election Poll</h1>
-  </header>
+<header class="banner-customizable">
+  <h1 style="text-align:center; color:#f1f5f9;">Tamil Nadu Election Exit Poll</h1>
+</header>
 
-  <main style="max-width:800px; margin:30px auto; padding:0 10px;">
-    <form id="poll-form">
-      
-      <!-- Question 1 -->
-      <section class="poll-card">
-        <label class="label-customizable">1. Which party do you think will win?</label>
-        <div class="options">
-          <label><input type="radio" name="q1" value="Party A"> DMK(M.K.Stalin)</label><br>
-          <label><input type="radio" name="q1" value="Party B"> AIADMK(EPS) </label><br>
-          <label><input type="radio" name="q1" value="Party C"> TVK(Vijay) </label>
-		  <label><input type="radio" name="q1" value="Party C"> NTK(Seeman) </label>
-        </div>
-      </section>
+<main style="max-width:900px; margin:30px auto; padding:0 10px;">
+  <form id="poll-form">
 
+    <!-- Question 1 -->
+    <section class="poll-card" id="q1-section">
+      <label class="label-customizable">1. Which party do you think will win? <span class="error-text" id="q1-error"></span></label>
+      <div class="options">
+        <label><input type="radio" name="q1" value="DMK (M.K. Stalin)"> DMK (M.K. Stalin)</label><br>
+        <label><input type="radio" name="q1" value="AIADMK (E.P.S)"> AIADMK (E.P.S)</label><br>
+        <label><input type="radio" name="q1" value="TVK (Vijay)"> TVK (Vijay)</label><br>
+        <label><input type="radio" name="q1" value="NTK (Seeman)"> NTK (Seeman)</label><br>
+        <label>
+          <input type="radio" name="q1" value="Others"> Others
+          <input type="text" name="q1_others" placeholder="Please specify">
+        </label>
+      </div>
+    </section>
 
-      <!-- Question 3 -->
-      <section class="poll-card">
-        <label class="label-customizable">3. Which issue is most important to you?</label>
-        <div class="options">
-          <label><input type="radio" name="q3" value="Economy & Jobs"> Economy & Jobs</label><br>
-          <label><input type="radio" name="q3" value="Healthcare"> Healthcare</label><br>
-          <label><input type="radio" name="q3" value="Education"> Education</label><br>
-          <label><input type="radio" name="q3" value="Infrastructure"> Infrastructure</label>
-        </div>
-      </section>
+    <!-- Question 2 -->
+    <section class="poll-card" id="q2-section">
+      <label class="label-customizable">2. Are you satisfied with the current government's performance? <span class="error-text" id="q2-error"></span></label>
+      <div class="options">
+        <label><input type="radio" name="q2" value="Very Satisfied"> Very Satisfied</label><br>
+        <label><input type="radio" name="q2" value="Satisfied"> Satisfied</label><br>
+        <label><input type="radio" name="q2" value="Neutral"> Neutral</label><br>
+        <label><input type="radio" name="q2" value="Dissatisfied"> Dissatisfied</label>
+      </div>
+    </section>
 
-      <!-- Question 4 -->
-      <section class="poll-card">
-        <label class="label-customizable">4. Are you satisfied with the current government's performance?</label>
-        <div class="options">
-          <label><input type="radio" name="q4" value="Very Satisfied"> Very Satisfied</label><br>
-          <label><input type="radio" name="q4" value="Satisfied"> Satisfied</label><br>
-          <label><input type="radio" name="q4" value="Neutral"> Neutral</label><br>
-          <label><input type="radio" name="q4" value="Dissatisfied"> Dissatisfied</label>
-        </div>
-      </section>
+    <!-- Question 3 -->
+    <section class="poll-card" id="q3-section">
+      <label class="label-customizable">3. Will Vijay be a defining factor in this election? <span class="error-text" id="q3-error"></span></label>
+      <div class="options">
+        <label><input type="radio" name="q3" value="Definitely Yes"> Definitely Yes</label><br>
+        <label><input type="radio" name="q3" value="Probably Yes"> Probably Yes</label><br>
+        <label><input type="radio" name="q3" value="Probably No"> Probably No</label><br>
+        <label><input type="radio" name="q3" value="Definitely No"> Definitely No</label><br>
+        <label><input type="radio" name="q3" value="Not Sure"> Not Sure</label>
+      </div>
+    </section>
 
-      <!-- Question 5 -->
-      <section class="poll-card">
-        <label class="label-customizable">5. Which age group do you belong to?</label>
-        <div class="options">
-          <label><input type="radio" name="q5" value="18–25"> 18–25</label><br>
-          <label><input type="radio" name="q5" value="26–35"> 26–35</label><br>
-          <label><input type="radio" name="q5" value="36–50"> 36–50</label><br>
-          <label><input type="radio" name="q5" value="50+"> 50+</label>
-        </div>
-      </section>
+    <!-- Question 4 -->
+    <section class="poll-card" id="q4-section">
+      <label class="label-customizable">4. Which factor will be most important in this election? <span class="error-text" id="q4-error"></span></label>
+      <div class="options">
+        <label><input type="radio" name="q4" value="Party Manifestos"> Party Manifestos</label><br>
+        <label><input type="radio" name="q4" value="Women's Rights"> Women's Rights</label><br>
+        <label><input type="radio" name="q4" value="Corruption"> Corruption</label><br>
+        <label><input type="radio" name="q4" value="Political Alliances"> Political Alliances</label><br>
+        <label><input type="radio" name="q4" value="CM Candidates"> C.M Candidates</label>
+      </div>
+    </section>
 
-      <!-- Question 6 -->
-      <section class="poll-card">
-        <label class="label-customizable">6. Would you encourage your friends/family to vote?</label>
-        <div class="options">
-          <label><input type="radio" name="q6" value="Yes"> Yes</label><br>
-          <label><input type="radio" name="q6" value="No"> No</label>
-        </div>
-      </section>
-		
-		<button type="button" class="submitButton-customizable"
-onclick="window.location.href='https://us-east-158rrqzapm.auth.us-east-1.amazoncognito.com/login?client_id=h6ao7f2ta1547ajhur92ee6p2&redirect_uri=https://hawkview-poll.s3.us-east-1.amazonaws.com/index.html&response_type=code&scope=email+openid+phone'">
-Submit
-</button>
+    <!-- Question 5 -->
+    <section class="poll-card" id="q5-section">
+      <label class="label-customizable">5. Which age group do you belong to? <span class="error-text" id="q5-error"></span></label>
+      <div class="options">
+        <label><input type="radio" name="q5" value="18–25"> 18–25</label><br>
+        <label><input type="radio" name="q5" value="26–35"> 26–35</label><br>
+        <label><input type="radio" name="q5" value="36–50"> 36–50</label><br>
+        <label><input type="radio" name="q5" value="50+"> 50+</label>
+      </div>
+    </section>
 
-    </form>
-  </main>
+    <!-- Question 6 -->
+    <section class="poll-card" id="q6-section">
+      <label class="label-customizable">6. Select your District and Constituency: <span class="error-text" id="q6-error"></span></label>
+      <div class="options">
+        <select id="district" name="district">
+          <option value="">Select District</option>
+          <option value="Chennai">Chennai</option>
+          <option value="Coimbatore">Coimbatore</option>
+          <option value="Madurai">Madurai</option>
+          <option value="Salem">Salem</option>
+          <option value="Tiruchirappalli">Tiruchirappalli</option>
+          <option value="Tirunelveli">Tirunelveli</option>
+          <option value="Erode">Erode</option>
+          <option value="Vellore">Vellore</option>
+          <option value="Thoothukudi">Thoothukudi</option>
+          <option value="Tiruvallur">Tiruvallur</option>
+          <option value="Thanjavur">Thanjavur</option>
+          <option value="Dindigul">Dindigul</option>
+          <option value="Nagapattinam">Nagapattinam</option>
+          <option value="Krishnagiri">Krishnagiri</option>
+          <option value="Kanchipuram">Kanchipuram</option>
+          <!-- Add all other districts similarly -->
+        </select>
 
-  <script>
-    // Replace with your AWS region and credentials
-    const REGION = "ap-south-1";
+        <select id="constituency" name="constituency">
+          <option value="">Select Constituency</option>
+        </select>
+      </div>
+    </section>
 
-    const client = new aws_sdk_client_dynamodb.DynamoDBClient({ region: REGION });
-    const ddbDocClient = aws_sdk_lib_dynamodb.DynamoDBDocumentClient.from(client);
+    <button type="submit" class="submitButton-customizable">Submit Poll</button>
+    <p id="status" style="margin-top:15px; font-weight:bold;"></p>
 
-    document.getElementById('poll-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const form = e.target;
+  </form>
+</main>
 
-      const data = {
-        responseId: uuidv4(),
-        q1: form.q1.value,
-        q2: form.q2.value,
-        q3: form.q3.value,
-        q4: form.q4.value,
-        q5: form.q5.value,
-        q6: form.q6.value,
-        timestamp: new Date().toISOString()
-      };
+<script>
+  // District → Constituency mapping (example, add all constituencies as needed)
+  const districtMap = {
+    "Chennai": ["Royapettah", "Velachery", "Anna Nagar", "Thousand Lights", "Egmore"],
+    "Coimbatore": ["Thondamuthur", "Gandhipuram", "Sulur", "Coimbatore North", "Coimbatore South"],
+    "Madurai": ["Madurai North", "Madurai South", "Thiruparankundram", "Melur", "Usilampatti"],
+    "Salem": ["Salem North", "Salem South", "Omalur"],
+    "Tiruchirappalli": ["Srirangam", "Manapparai", "Lalgudi", "Tiruchirappalli West"],
+    "Tirunelveli": ["Palayamkottai", "Tirunelveli", "Ambasamudram"],
+    "Erode": ["Erode East", "Erode West", "Perundurai"],
+    "Vellore": ["Vellore", "Katpadi", "Gudiyatham"],
+    "Thoothukudi": ["Thoothukudi", "Srivaikuntam", "Vilathikulam"],
+    "Tiruvallur": ["Tiruvallur", "Ponneri", "Gummidipoondi"],
+    "Thanjavur": ["Thanjavur", "Kumbakonam", "Papanasam"],
+    "Dindigul": ["Dindigul", "Nilakottai", "Natham"],
+    "Nagapattinam": ["Nagapattinam", "Kilvelur", "Vedaranyam"],
+    "Krishnagiri": ["Krishnagiri", "Pochampalli", "Uthangarai"],
+    "Kanchipuram": ["Kanchipuram", "Chengalpattu", "Sriperumbudur"]
+  };
 
-      try {
-        await ddbDocClient.send(new aws_sdk_lib_dynamodb.PutCommand({
-          TableName: "HawkviewPollResponses",
-          Item: data
-        }));
-        alert("Thank you! Your vote has been submitted.");
+  const districtSelect = document.getElementById("district");
+  const constituencySelect = document.getElementById("constituency");
+
+  districtSelect.addEventListener("change", () => {
+    const district = districtSelect.value;
+    constituencySelect.innerHTML = '<option value="">Select Constituency</option>';
+    if(districtMap[district]){
+      districtMap[district].forEach(c => {
+        const option = document.createElement("option");
+        option.value = c;
+        option.text = c;
+        constituencySelect.add(option);
+      });
+    }
+  });
+</script>
+
+<script>
+  const REGION = "ap-south-1";
+  const client = new aws_sdk_client_dynamodb.DynamoDBClient({ region: REGION });
+  const ddbDocClient = aws_sdk_lib_dynamodb.DynamoDBDocumentClient.from(client);
+
+  const form = document.getElementById("poll-form");
+  const statusEl = document.getElementById("status");
+
+  function validateForm() {
+    let valid = true;
+
+    // Clear previous errors
+    document.querySelectorAll(".error-text").forEach(e => e.innerText="");
+    document.querySelectorAll("section").forEach(sec => sec.classList.remove("error"));
+
+    // Check all questions
+    const q1 = form.q1.value;
+    if(!q1 || (q1==="Others" && !form.q1_others.value.trim())){
+      valid=false;
+      document.getElementById("q1-error").innerText=" *Required";
+      document.getElementById("q1-section").classList.add("error");
+    }
+    if(!form.q2.value){ valid=false; document.getElementById("q2-error").innerText=" *Required"; document.getElementById("q2-section").classList.add("error"); }
+    if(!form.q3.value){ valid=false; document.getElementById("q3-error").innerText=" *Required"; document.getElementById("q3-section").classList.add("error"); }
+    if(!form.q4.value){ valid=false; document.getElementById("q4-error").innerText=" *Required"; document.getElementById("q4-section").classList.add("error"); }
+    if(!form.q5.value){ valid=false; document.getElementById("q5-error").innerText=" *Required"; document.getElementById("q5-section").classList.add("error"); }
+    if(!form.district.value || !form.constituency.value){
+      valid=false; 
+      document.getElementById("q6-error").innerText=" *Required"; 
+      document.getElementById("q6-section").classList.add("error");
+    }
+
+    return valid;
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if(!validateForm()) return;
+
+    const token = await grecaptcha.execute('6Ld3BnUsAAAAAOFlxURTcfbTBGgW875Q8tByK9nM', { action: 'submit_poll' });
+
+    const data = {
+      responseId: uuidv4(),
+      q1: form.q1.value === "Others" ? form.q1_others.value : form.q1.value,
+      q2: form.q2.value,
+      q3: form.q3.value,
+      q4: form.q4.value,
+      q5: form.q5.value,
+      district: form.district.value,
+      constituency: form.constituency.value,
+      timestamp: new Date().toISOString(),
+      recaptchaToken: token
+    };
+
+    try {
+      const response = await fetch("https://b2c3jc8q48.execute-api.us-east-1.amazonaws.com/production/submitPoll", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+
+      if(response.status===200){
+        statusEl.style.color="green";
+        statusEl.innerText="✅ Your poll entry has been successfully submitted!";
         form.reset();
-      } catch (err) {
-        console.error(err);
-        alert("Error submitting poll. Please try again.");
+        constituencySelect.innerHTML='<option value="">Select Constituency</option>';
+      } else if(response.status===403){
+        statusEl.style.color="red";
+        statusEl.innerText="⚠ CAPTCHA verification failed. Please try again.";
+      } else{
+        statusEl.style.color="red";
+        statusEl.innerText="⚠ Error submitting poll. Please try again.";
       }
-    });
-  </script>
+    } catch(err){
+      console.error(err);
+      statusEl.style.color="red";
+      statusEl.innerText="⚠ Network error. Please try again later.";
+    }
+  });
+</script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
