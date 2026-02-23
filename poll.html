@@ -4,13 +4,14 @@
   <meta charset="UTF-8">
   <title>Tamil Nadu Election Exit Poll | Hawkview</title>
   <script src="https://cdn.jsdelivr.net/npm/uuid@9.0.0/dist/umd/uuidv4.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@aws-sdk/client-dynamodb/dist/aws-sdk-client-dynamodb.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@aws-sdk/lib-dynamodb/dist/aws-sdk-lib-dynamodb.min.js"></script>
-  <script src="https://www.google.com/recaptcha/api.js?render=YOUR_SITE_KEY"></script>
+  <script src="https://www.google.com/recaptcha/api.js?render=6Ld3BnUsAAAAAOFlxURTcfbTBGgW875Q8tByK9nM"></script> <!-- Replace with your site key -->
   <link rel="stylesheet" href="poll.css">
   <style>
     .error { border: 2px solid red; }
     .error-text { color: red; font-weight: bold; }
+    .poll-card { margin-bottom: 20px; padding: 10px; border: 1px solid #ccc; border-radius: 8px; background: #f9f9f9; }
+    .submitButton-customizable { padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+    .submitButton-customizable:hover { background-color: #45a049; }
   </style>
 </head>
 <body class="background-customizable">
@@ -104,7 +105,6 @@
           <option value="Nagapattinam">Nagapattinam</option>
           <option value="Krishnagiri">Krishnagiri</option>
           <option value="Kanchipuram">Kanchipuram</option>
-          <!-- Add all other districts similarly -->
         </select>
 
         <select id="constituency" name="constituency">
@@ -115,12 +115,11 @@
 
     <button type="submit" class="submitButton-customizable">Submit Poll</button>
     <p id="status" style="margin-top:15px; font-weight:bold;"></p>
-
   </form>
 </main>
 
 <script>
-  // District → Constituency mapping (example, add all constituencies as needed)
+  // District → Constituency mapping
   const districtMap = {
     "Chennai": ["Royapettah", "Velachery", "Anna Nagar", "Thousand Lights", "Egmore"],
     "Coimbatore": ["Thondamuthur", "Gandhipuram", "Sulur", "Coimbatore North", "Coimbatore South"],
@@ -154,40 +153,31 @@
       });
     }
   });
-</script>
 
-<script>
-  const REGION = "ap-south-1";
-  const client = new aws_sdk_client_dynamodb.DynamoDBClient({ region: REGION });
-  const ddbDocClient = aws_sdk_lib_dynamodb.DynamoDBDocumentClient.from(client);
-
+  // Form validation and submission
   const form = document.getElementById("poll-form");
   const statusEl = document.getElementById("status");
 
   function validateForm() {
     let valid = true;
-
-    // Clear previous errors
     document.querySelectorAll(".error-text").forEach(e => e.innerText="");
-    document.querySelectorAll("section").forEach(sec => sec.classList.remove("error"));
+    document.querySelectorAll(".poll-card").forEach(sec => sec.classList.remove("error"));
 
-    // Check all questions
     const q1 = form.q1.value;
     if(!q1 || (q1==="Others" && !form.q1_others.value.trim())){
       valid=false;
-      document.getElementById("q1-error").innerText=" *Required";
+      document.getElementById("q1-error").innerText="* Required";
       document.getElementById("q1-section").classList.add("error");
     }
-    if(!form.q2.value){ valid=false; document.getElementById("q2-error").innerText=" *Required"; document.getElementById("q2-section").classList.add("error"); }
-    if(!form.q3.value){ valid=false; document.getElementById("q3-error").innerText=" *Required"; document.getElementById("q3-section").classList.add("error"); }
-    if(!form.q4.value){ valid=false; document.getElementById("q4-error").innerText=" *Required"; document.getElementById("q4-section").classList.add("error"); }
-    if(!form.q5.value){ valid=false; document.getElementById("q5-error").innerText=" *Required"; document.getElementById("q5-section").classList.add("error"); }
+    if(!form.q2.value){ valid=false; document.getElementById("q2-error").innerText="* Required"; document.getElementById("q2-section").classList.add("error"); }
+    if(!form.q3.value){ valid=false; document.getElementById("q3-error").innerText="* Required"; document.getElementById("q3-section").classList.add("error"); }
+    if(!form.q4.value){ valid=false; document.getElementById("q4-error").innerText="* Required"; document.getElementById("q4-section").classList.add("error"); }
+    if(!form.q5.value){ valid=false; document.getElementById("q5-error").innerText="* Required"; document.getElementById("q5-section").classList.add("error"); }
     if(!form.district.value || !form.constituency.value){
-      valid=false; 
-      document.getElementById("q6-error").innerText=" *Required"; 
+      valid=false;
+      document.getElementById("q6-error").innerText="* Required";
       document.getElementById("q6-section").classList.add("error");
     }
-
     return valid;
   }
 
@@ -195,6 +185,7 @@
     e.preventDefault();
     if(!validateForm()) return;
 
+    // Execute reCAPTCHA v3
     const token = await grecaptcha.execute('6Ld3BnUsAAAAAOFlxURTcfbTBGgW875Q8tByK9nM', { action: 'submit_poll' });
 
     const data = {
@@ -211,21 +202,21 @@
     };
 
     try {
-      const response = await fetch("https://b2c3jc8q48.execute-api.us-east-1.amazonaws.com/production/submitPoll", {
+      const response = await fetch("https://https://b2c3jc8q48.execute-api.us-east-1.amazonaws.com/production/submitPoll", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
       });
 
-      if(response.status===200){
+      if(response.status === 200){
         statusEl.style.color="green";
         statusEl.innerText="✅ Your poll entry has been successfully submitted!";
         form.reset();
         constituencySelect.innerHTML='<option value="">Select Constituency</option>';
-      } else if(response.status===403){
+      } else if(response.status === 403){
         statusEl.style.color="red";
         statusEl.innerText="⚠ CAPTCHA verification failed. Please try again.";
-      } else{
+      } else {
         statusEl.style.color="red";
         statusEl.innerText="⚠ Error submitting poll. Please try again.";
       }
