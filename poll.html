@@ -4,14 +4,11 @@
   <meta charset="UTF-8">
   <title>Tamil Nadu Election Exit Poll | Hawkview</title>
   <script src="https://cdn.jsdelivr.net/npm/uuid@9.0.0/dist/umd/uuidv4.min.js"></script>
-  <script src="https://www.google.com/recaptcha/api.js?render=6Ld3BnUsAAAAAOFlxURTcfbTBGgW875Q8tByK9nM"></script> <!-- Replace with your site key -->
   <link rel="stylesheet" href="poll.css">
+  <script src="https://www.google.com/recaptcha/api.js?render=6Ld3BnUsAAAAAOFlxURTcfbTBGgW875Q8tByK9nM"></script>
   <style>
     .error { border: 2px solid red; }
     .error-text { color: red; font-weight: bold; }
-    .poll-card { margin-bottom: 20px; padding: 10px; border: 1px solid #ccc; border-radius: 8px; background: #1e293b; }
-    .submitButton-customizable { padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
-    .submitButton-customizable:hover { background-color: #45a049; }
   </style>
 </head>
 <body class="background-customizable">
@@ -115,6 +112,7 @@
 
     <button type="submit" class="submitButton-customizable">Submit Poll</button>
     <p id="status" style="margin-top:15px; font-weight:bold;"></p>
+
   </form>
 </main>
 
@@ -153,39 +151,35 @@
       });
     }
   });
+</script>
 
-  // Form validation and submission
+<script>
   const form = document.getElementById("poll-form");
   const statusEl = document.getElementById("status");
 
   function validateForm() {
     let valid = true;
     document.querySelectorAll(".error-text").forEach(e => e.innerText="");
-    document.querySelectorAll(".poll-card").forEach(sec => sec.classList.remove("error"));
+    document.querySelectorAll("section").forEach(sec => sec.classList.remove("error"));
 
-    const q1 = form.q1.value;
-    if(!q1 || (q1==="Others" && !form.q1_others.value.trim())){
+    if(!form.q1.value || (form.q1.value==="Others" && !form.q1_others.value.trim())){
       valid=false;
-      document.getElementById("q1-error").innerText="* Required";
+      document.getElementById("q1-error").innerText=" *Required";
       document.getElementById("q1-section").classList.add("error");
     }
-    if(!form.q2.value){ valid=false; document.getElementById("q2-error").innerText="* Required"; document.getElementById("q2-section").classList.add("error"); }
-    if(!form.q3.value){ valid=false; document.getElementById("q3-error").innerText="* Required"; document.getElementById("q3-section").classList.add("error"); }
-    if(!form.q4.value){ valid=false; document.getElementById("q4-error").innerText="* Required"; document.getElementById("q4-section").classList.add("error"); }
-    if(!form.q5.value){ valid=false; document.getElementById("q5-error").innerText="* Required"; document.getElementById("q5-section").classList.add("error"); }
-    if(!form.district.value || !form.constituency.value){
-      valid=false;
-      document.getElementById("q6-error").innerText="* Required";
-      document.getElementById("q6-section").classList.add("error");
-    }
+    if(!form.q2.value){ valid=false; document.getElementById("q2-error").innerText=" *Required"; document.getElementById("q2-section").classList.add("error"); }
+    if(!form.q3.value){ valid=false; document.getElementById("q3-error").innerText=" *Required"; document.getElementById("q3-section").classList.add("error"); }
+    if(!form.q4.value){ valid=false; document.getElementById("q4-error").innerText=" *Required"; document.getElementById("q4-section").classList.add("error"); }
+    if(!form.q5.value){ valid=false; document.getElementById("q5-error").innerText=" *Required"; document.getElementById("q5-section").classList.add("error"); }
+    if(!form.district.value || !form.constituency.value){ valid=false; document.getElementById("q6-error").innerText=" *Required"; document.getElementById("q6-section").classList.add("error"); }
+
     return valid;
   }
 
   form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // correct: listen to form submit
     if(!validateForm()) return;
 
-    // Execute reCAPTCHA v3
     const token = await grecaptcha.execute('6Ld3BnUsAAAAAOFlxURTcfbTBGgW875Q8tByK9nM', { action: 'submit_poll' });
 
     const data = {
@@ -208,15 +202,15 @@
         body: JSON.stringify(data)
       });
 
-      if(response.status === 200){
+      if(response.status===200){
         statusEl.style.color="green";
         statusEl.innerText="✅ Your poll entry has been successfully submitted!";
         form.reset();
         constituencySelect.innerHTML='<option value="">Select Constituency</option>';
-      } else if(response.status === 403){
+      } else if(response.status===403){
         statusEl.style.color="red";
         statusEl.innerText="⚠ CAPTCHA verification failed. Please try again.";
-      } else {
+      } else{
         statusEl.style.color="red";
         statusEl.innerText="⚠ Error submitting poll. Please try again.";
       }
@@ -229,5 +223,3 @@
 </script>
 </body>
 </html>
-
-
